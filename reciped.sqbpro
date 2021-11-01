@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="D:/VSCodeProjects/vue/reciped/reciped-server/reciped.sqlite" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2149"/><column_width id="4" width="0"/></tab_structure><tab_browse><current_table name="0,0:"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">
+
+SELECT * from Ingredients i
+inner JOIN ingredient_list ri
+	on ri.ingredient_id = i.id
+inner join recipes r
+	on ri.recipe_id = r.id
+where r.id=26;</sql><sql name="SQL 2">select ingredients.* from ingredient_list left join
+ingredients on ingredient_list.ingredient_id=ingredients.id where ingredient_list.recipe_id=1</sql><sql name="SQL 3">select yield_types.* from recipes left join
+yield_types on recipes.yield_type_id=yield_types.id where recipes.id=31</sql><sql name="SQL 4">SELECT * from yield_types y
+inner JOIN recipes r
+	on r.yield_type_id = y.id
+where r.id=26;</sql><sql name="SQL 5">SELECT y.id,yield_amount, y.name from recipes r
+inner JOIN yield_types y
+	on r.yield_type_id = y.id
+where r.id=30;</sql><sql name="SQL 6">select * from ingredient_groups ig 
+inner join ingredients i
+on il.group_id=ig.id
+left join ingredient_list il
+on i.id=il.ingredient_id
+where il.recipe_id=8</sql><sql name="SQL 7">select r.id,r.title, a.name from recipes r
+inner join author_list al
+on a.id = al.author_id and r.id=al.recipe_id
+inner join authors a
+where a.id=7</sql><sql name="SQL 8">Select a.id, a.name from authors a
+        inner join author_list al
+        on al.author_id = a.id and al.recipe_id=r.id
+        inner join recipes r
+        where r.id=2</sql><sql name="SQL 10">select a.*,r.* from recipes r
+inner join 
+authors a 
+on a.name like 'a%'  or r.title like 'a%' 
+</sql><current_tab id="8"/></tab_sql></sqlb_project>

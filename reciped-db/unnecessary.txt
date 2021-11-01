@@ -1,0 +1,7 @@
+ingredient_info
+ingredient_properties
+ingredient_weights
+rating_criteria
+rating_criterion_list
+ratings
+units_conversion

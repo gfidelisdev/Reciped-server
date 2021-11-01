@@ -1,0 +1,13 @@
+    author_list *
+    authors *
+    categories *
+    category_list *
+    ingredient_groups *
+    ingredient_list *
+    ingredients *
+    prep_method_list *
+    prep_methods *
+    recipes *
+    unit_list
+    units *
+    yield_types *
