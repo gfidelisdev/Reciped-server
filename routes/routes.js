@@ -1,7 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 const { Sequelize, QueryTypes } = require('sequelize');
-
+const sequelize = require('./../db');
 /**
  * Models import
  */
@@ -67,11 +67,11 @@ function route(app){
     })  
 
     app.get('/category/:id', function(req,res){
-    Category.findByPk(req.params.id).then(category=>res.json(category))
+        Category.findByPk(req.params.id).then(category=>res.json(category))
     })
 
     app.get('/ingredients/recipe/:id',function(req,res){
-    sequelize.
+        sequelize.
         query(`select ingredients.* from ingredient_list left join
             ingredients on ingredient_list.ingredient_id=ingredients.id 
             where ingredient_list.recipe_id=${req.params.id}`, 
@@ -79,7 +79,7 @@ function route(app){
         .then((i)=>res.json(i))
     })
     app.get('/yield/recipe/:id',function(req,res){
-    sequelize.
+        sequelize.
         query(`SELECT y.id,yield_amount, y.name from recipes r
             inner JOIN yield_types y
             on r.yield_type_id = y.id
@@ -88,7 +88,7 @@ function route(app){
         .then((i)=>res.json(i))
     })
     app.get('/recipes/author/:id', (req,res)=>{
-    sequelize.
+        sequelize.
         query(`Select r.* from recipes r
             inner join author_list al
             on al.author_id = a.id and al.recipe_id=r.id
@@ -103,7 +103,7 @@ function route(app){
 
     })
     app.get('/author/recipe/:id', (req,res)=>{
-    sequelize.
+        sequelize.
         query(`Select a.id, a.name from authors a
             inner join author_list al
             on al.author_id = a.id and al.recipe_id=r.id
