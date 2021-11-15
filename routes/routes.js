@@ -78,6 +78,19 @@ function route(app){
             {type: QueryTypes.SELECT})
         .then((i)=>res.json(i))
     })
+    app.get('/ingredient_list/recipe/:id',function(req,res){
+        sequelize.
+        query(`select * from ingredient_list
+        join 
+        (SELECT id as i_id,name as i_name from ingredients) i on ingredient_list.ingredient_id=i.i_id
+        join 
+        (SELECT id as g_id, name as g_name from ingredient_groups) g on ingredient_list.group_id=g.g_id
+        join 
+        (SELECT id as u_id, name as u_name from units) u on ingredient_list.unit_id=u.u_id
+         WHERE ingredient_list.recipe_id=${req.params.id}`, 
+            {type: QueryTypes.SELECT})
+        .then((i)=>res.json(i))
+    })
     app.get('/yield/recipe/:id',function(req,res){
         sequelize.
         query(`SELECT y.id,yield_amount, y.name from recipes r

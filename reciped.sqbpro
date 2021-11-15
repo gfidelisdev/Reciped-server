@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="D:/VSCodeProjects/vue/reciped/reciped-server/reciped.sqlite" readonly="0" foreign_keys="" case_sensitive_like="" temp_store="" wal_autocheckpoint="" synchronous=""/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2149"/><column_width id="4" width="0"/></tab_structure><tab_browse><current_table name="0,0:"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/guilherme/OneDrive/vscode/vue/reciped/reciped-old.sqlite" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2149"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,11:mainauthor_list"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">
 
 SELECT * from Ingredients i
 inner JOIN ingredient_list ri
@@ -26,8 +26,14 @@ where a.id=7</sql><sql name="SQL 8">Select a.id, a.name from authors a
         inner join author_list al
         on al.author_id = a.id and al.recipe_id=r.id
         inner join recipes r
-        where r.id=2</sql><sql name="SQL 10">select a.*,r.* from recipes r
-inner join 
-authors a 
-on a.name like 'a%'  or r.title like 'a%' 
-</sql><current_tab id="8"/></tab_sql></sqlb_project>
+        where r.id=2</sql><sql name="SQL 10">select a.*,r.* from recipes r
+inner join 
+authors a 
+on a.name like 'a%'  or r.title like 'a%' 
+</sql><sql name="SQL 10">with recursive cat as
+	(SELECT * from categories  where id=12
+		UNION
+		SELECT c1.* from categories c1
+		join cat c2 on
+			c1.id = c2.parent_id)
+			SELECT * from cat</sql><current_tab id="9"/></tab_sql></sqlb_project>
