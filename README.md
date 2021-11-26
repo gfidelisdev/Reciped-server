@@ -8,12 +8,12 @@ Rename reciped_template.sqlite to reciped.sqlite
 Run npm i
 ```
 
-## Run on Windows
+### Run on Windows
 ```
 start.bat
 ```
 
-## Run on Linux 
+### Run on Linux 
 ```
 start.sh
 ```
