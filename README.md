@@ -1,6 +1,6 @@
 # Reciped-server
-# Backend for https://github.com/SenhorLimao/Reciped
-# Project Setup
+### Backend for https://github.com/SenhorLimao/Reciped
+## Project Setup
 ```
 Rename reciped_template.sqlite to reciped.sqlite
 ```
@@ -8,12 +8,12 @@ Rename reciped_template.sqlite to reciped.sqlite
 Run npm i
 ```
 
-# Run on Windows
+## Run on Windows
 ```
 start.bat
 ```
 
-# Run on Linux 
+## Run on Linux 
 ```
 start.sh
 ```
