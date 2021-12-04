@@ -5,6 +5,12 @@ const Prep_Method = require('./prep_method');
 
 class Prep_Method_List extends Model{}
 Prep_Method_List.init({
+    // id: {
+    //     type: Sequelize.INTEGER,
+    //     autoIncrement: true,
+    //     allowNull: false,
+    //     primaryKey: true
+    // },
     ingredient_list_id:{
         type: Sequelize.INTEGER,
         references: {

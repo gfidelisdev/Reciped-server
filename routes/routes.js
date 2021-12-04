@@ -2,6 +2,23 @@ var express = require('express');
 var cors = require('cors');
 const { Sequelize, QueryTypes } = require('sequelize');
 const sequelize = require('./../db');
+
+/**
+ * Utils area
+ */
+
+
+const removeNulls = (obj) => {
+    let result = {}
+    for (let key in obj) {
+        if (obj[key] !== null && typeof(obj[key]) !== "undefined") {
+            result[key] = obj[key]
+        }
+    }
+    return result
+}
+
+
 /**
  * Models import
  */
@@ -22,6 +39,10 @@ const Category_List = require("../reciped-db/category_list");
 function route(app){
     app.get('/teste',(req,res)=>{return res.send('teste')});
     app.get('/', (req, res) => res.send('Notes App'));
+
+    /**
+     * Bloco de listagem de dados de tabelas
+     */
     app.get('/units', function(req, res) {
         Unit.findAll({
           order:[[Sequelize.fn('lower', Sequelize.col('name')),'ASC',]]})
@@ -41,6 +62,10 @@ function route(app){
         Prep_Method.findAll({
         order:[[Sequelize.fn('lower', Sequelize.col('name')),'ASC',]]})
         .then(prep_methods => res.json(prep_methods));
+    });
+    app.get('/prep_method_list', function(req, res) {
+        Prep_Method_List.findAll()
+        .then(prep_method_list => res.json(prep_method_list));
     });
     app.get('/recipes', function(req, res) {
         Recipe.findAll({
@@ -66,10 +91,38 @@ function route(app){
         .then(categories=>res.json(categories))
     })  
 
+    /**
+     * Fim do bloco de listagem de dados de tabelas
+     */
+
+    /**
+     * Bloco de pesquisas de tabelas por id
+     */
     app.get('/category/:id', function(req,res){
         Category.findByPk(req.params.id).then(category=>res.json(category))
     })
+    app.get('/prep_method/:id', function(req,res){
+        Prep_Method.findByPk(req.params.id).then(prep_method=>res.json(prep_method))
+    })
+    app.get('/unit/:id', function(req,res){
+        Unit.findByPk(req.params.id).then(unit=>res.json(unit))
+    })
 
+    app.get('/ingredient_group/:id', function(req,res){
+        Ingredient_Group.findByPk(req.params.id).then(ingredient_group=>res.json(ingredient_group))
+    })
+
+    app.get('/ingredient/:id', function(req,res){
+        Ingredient.findByPk(req.params.id).then(ingredient=>res.json(ingredient))
+    })
+
+    /**
+     * Fim do bloco de pesquisas de tabelas por id
+     */
+
+    /**
+     * Bloco de pesquisa de registros relacionados
+     */
     app.get('/ingredients/recipe/:id',function(req,res){
         sequelize.
         query(`select ingredients.* from ingredient_list left join
@@ -84,12 +137,18 @@ function route(app){
         left outer join 
         (SELECT id as i_id,name as i_name from ingredients) i on ingredient_list.ingredient_id=i.i_id
         left outer join 
-        (SELECT id as g_id, name as g_name from ingredient_groups) g on ingredient_list.group_id=g.g_id
-        left outer join 
         (SELECT id as u_id, name as u_name from units) u on ingredient_list.unit_id=u.u_id
-         WHERE ingredient_list.recipe_id=${req.params.id} order by g_name`, 
+        left outer join 
+        (SELECT id as g_id, name as g_name from ingredient_groups) g on ingredient_list.group_id=g.g_id
+        left outer join
+        (select prep_method_id as pm_id, ingredient_list_id as ild from prep_method_list) pml on pml.ild=ingredient_list.id
+        left outer JOIN
+        (select id as prm_id, name as prm_name FROM prep_methods) prm on prm.prm_id=pml.pm_id
+        WHERE ingredient_list.recipe_id=${req.params.id} order by g_name`, 
             {type: QueryTypes.SELECT})
         .then((i)=>res.json(i))
+        
+        
     })
     app.get('/yield/recipe/:id',function(req,res){
         sequelize.
@@ -130,6 +189,13 @@ function route(app){
         });
     })
 
+    /**
+     * Fim do bloco de pesquisa de registros relacionados
+     */
+
+    /**
+     * Bloco de Criação de Novos Registros
+     */
     app.post('/recipe/save', (req,res)=>{
         Recipe.create({
         title:req.body.title,
@@ -221,25 +287,130 @@ function route(app){
         .catch(err=>res.json(err))
     })
 
+    /**
+     * Fim do bloco de criação de novos registros	
+     */
 
+
+    /**
+     * Bloco de pesquisa textual
+     */
     app.get('/authors/namelike/:value',(req,res)=>{
         sequelize.query(`Select * from authors
         where name like '%${req.params.value}%'`)  
-        .then((result) => {
-            res.json(result)
-        }).catch((err) => {
-            res.json(err)
-        });
+            .then((result) => {
+                res.json(result)
+            }).catch((err) => {
+                res.json(err)
+            });
     })
     app.get('/recipes/namelike/:value',(req,res)=>{
-    sequelize.query(`Select * from recipes
-    where title like '%${req.params.value}%'`)  
-    .then((result) => {
-        res.json(result)
-    }).catch((err) => {
-        res.json(err)
-    });
+        sequelize.query(`Select * from recipes
+        where title like '%${req.params.value}%'`)  
+            .then((result) => {
+                res.json(result)
+            }).catch((err) => {
+                res.json(err)
+            });
     })
+    /**
+     * Fim do bloco de pesquisa textual
+     */
+
+    /**
+     * Bloco de atualização de registros
+     */
+    app.put('/recipe/:id', (req,res)=>{
+        Recipe.update(
+            removeNulls(req.body),  
+            // }
+            // {
+            // title:req.body.title,
+            // yield_amount: req.body.yield_amount,
+            // yield_type_id: req.body.yield_type_id,
+            // instructions: req.body.instructions,
+            // prep_time: req.body.prep_time
+        {
+            where:{
+                id:req.params.id
+            }
+        })
+        .then(recipe=>res.json(recipe))
+        .catch(err=>res.json(err))
+    })
+
+    app.put('/ingredient_list/:id', (req, res) => {
+        console.log(req.body)
+        console.log(req.params)
+        Ingredient_List.update(
+            removeNulls(req.body),
+            // {
+            //     amount: req.body.amount,
+            //     unit_id: req.body.unit_id,
+            //     group_id: req.body.group_id,
+            //     substitute_for: req.body.substitute_for,
+            //     ingredient_id: req.body.ingredient_id
+            // }, 
+            {
+                where: {
+                    id: req.params.id
+                }
+            })
+            .then(il => res.json(il))
+            .catch(err => res.json(err))
+    })
+
+    app.put('/prep_method_list/:id', (req,res)=>{
+        Prep_Method_List.update({
+            prep_method_id:req.body.prep_method_id
+        },{
+            where:{
+                ingredient_list_id:req.params.id
+            }
+        })
+        .then(pml=>res.json(pml))
+        .catch(err=>res.json(err))
+    })
+    /**
+     * Fim do bloco de atualização de registros
+     */
+
+    /**
+     * Bloco de exclusão de registros
+     */
+    app.delete('/recipe/:id', (req,res)=>{
+        Recipe.destroy({
+            where:{
+                id:req.params.id
+            }
+        })
+        .then(recipe=>res.json(recipe))
+        .catch(err=>res.json(err))
+    })
+
+    app.delete('/prep_method_list/:ingredient_list_id/:prep_method_id',(req,res)=>{
+        Prep_Method_List.destroy({
+            where:{
+                ingredient_list_id:req.params.ingredient_list_id,
+                prep_method_id:req.params.prep_method_id
+                }
+            })
+            .then(pml=>res.json(pml))
+            .catch(err=>res.json(err))
+    })
+
+    app.delete('ingredient_list/:id',(req,res)=>{
+        Ingredient_List.destroy({
+            where:{
+                id:req.params.id
+                }
+            })
+            .then(il=>res.json(il))
+            .catch(err=>res.json(err))
+    })
+    /**
+     * Fim do bloco de exclusão de registros
+     */
 }
 
 module.exports = route
