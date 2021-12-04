@@ -1,5 +1,19 @@
 # Reciped-server
-
+### Backend for https://github.com/SenhorLimao/Reciped
+## Project Setup
+```
 Rename reciped_template.sqlite to reciped.sqlite
+```
+```
 Run npm i
-Execute start.bar on Windows or start.sh on Linux
+```
+
+### Run on Windows
+```
+start.bat
+```
+
+### Run on Linux 
+```
+start.sh
+```
