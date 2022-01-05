@@ -172,7 +172,35 @@ function route(app){
         }).catch((err) => {
             console.error(err)
         });
+    })
+    app.get('/recipes/category/:id', (req,res)=>{
+        sequelize.
+        query(`Select r.* from recipes r
+            inner join category_list cl
+            on cl.category_id = c.id and cl.recipe_id=r.id
+            inner join categories c
+            where c.id=${req.params.id}`,
+            {type: QueryTypes.SELECT})
+        .then((r) => {
+            res.json(r)
+        }).catch((err) => {
+            console.error(err)
+        });
+    })
 
+    app.get('/category/recipe/:id', (req,res)=>{
+        sequelize.
+        query(`Select c.id, c.name from categories c
+            inner join category_list cl
+            on cl.category_id = c.id and cl.recipe_id=r.id
+            inner join recipes r
+            where r.id=${req.params.id}`,
+            {type: QueryTypes.SELECT})
+        .then((r) => {
+            res.json(r)
+        }).catch((err) => {
+            console.error(err)
+        });
     })
     app.get('/author/recipe/:id', (req,res)=>{
         sequelize.
@@ -184,6 +212,34 @@ function route(app){
             {type: QueryTypes.SELECT})
         .then((r) => {
             res.json(r)
+        }).catch((err) => {
+            console.error(err)
+        });
+    })
+
+    app.get('/authors/recipes', (req, res)=>{
+        sequelize.
+        query(`select * from author_list
+        left outer JOIN
+        (select id as recipe_id, title from recipes) r on author_list.recipe_id = r.recipe_id
+        left outer JOIN
+        (select id as author_id, name from authors) a on author_list.author_id=a.author_id
+        order by author_id`,
+            {type: QueryTypes.SELECT})
+        .then((r) => {
+            let result = []
+            r.forEach(item => {
+                if (!result[item.author_id]){
+                    result[item.author_id]={
+                      author_id: item.author_id,
+                      name: item.name,
+                    }
+                  }
+                  let recipe_tmp = result[item.author_id].recipes?result[item.author_id].recipes:[]
+                  recipe_tmp.push({recipe_id:item.recipe_id, title:item.title})
+                  result[item.author_id].recipes = recipe_tmp
+            })
+            res.json(result)
         }).catch((err) => {
             console.error(err)
         });
@@ -219,7 +275,7 @@ function route(app){
         .then(il=>res.json(il))
         .catch(err=>res.json(err))
     })
-    app.post('/author_list/save', (req,res)=>{
+    app.post('/author_list', (req,res)=>{
         Author_List.create({
         recipe_id:req.body.recipe_id,
         author_id:req.body.author_id,
@@ -360,6 +416,17 @@ function route(app){
             .catch(err => res.json(err))
     })
 
+    app.put('/author_list/:id', (req,res)=>{
+        Author_List.update({
+            author_id:req.body.author_id,
+        },{
+            where:{
+                recipe_id:req.params.id
+            }
+        })
+        .then(al=>res.json(al))
+        .catch(err=>res.json(err))
+    })
     app.put('/prep_method_list/:id', (req,res)=>{
         Prep_Method_List.update({
             prep_method_id:req.body.prep_method_id
