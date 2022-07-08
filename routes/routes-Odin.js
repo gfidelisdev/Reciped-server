@@ -2,23 +2,6 @@ var express = require('express');
 var cors = require('cors');
 const { Sequelize, QueryTypes } = require('sequelize');
 const sequelize = require('./../db');
-
-/**
- * Utils area
- */
-
-
-const removeNulls = (obj) => {
-    let result = {}
-    for (let key in obj) {
-        if (obj[key] !== null && typeof(obj[key]) !== "undefined") {
-            result[key] = obj[key]
-        }
-    }
-    return result
-}
-
-
 /**
  * Models import
  */
@@ -172,35 +155,7 @@ function route(app){
         }).catch((err) => {
             console.error(err)
         });
-    })
-    app.get('/recipes/category/:id', (req,res)=>{
-        sequelize.
-        query(`Select r.* from recipes r
-            inner join category_list cl
-            on cl.category_id = c.id and cl.recipe_id=r.id
-            inner join categories c
-            where c.id=${req.params.id}`,
-            {type: QueryTypes.SELECT})
-        .then((r) => {
-            res.json(r)
-        }).catch((err) => {
-            console.error(err)
-        });
-    })
 
-    app.get('/category/recipe/:id', (req,res)=>{
-        sequelize.
-        query(`Select c.id, c.name from categories c
-            inner join category_list cl
-            on cl.category_id = c.id and cl.recipe_id=r.id
-            inner join recipes r
-            where r.id=${req.params.id}`,
-            {type: QueryTypes.SELECT})
-        .then((r) => {
-            res.json(r)
-        }).catch((err) => {
-            console.error(err)
-        });
     })
     app.get('/author/recipe/:id', (req,res)=>{
         sequelize.
@@ -212,40 +167,6 @@ function route(app){
             {type: QueryTypes.SELECT})
         .then((r) => {
             res.json(r)
-        }).catch((err) => {
-            console.error(err)
-        });
-    })
-
-    app.get('/authors/recipes', (req, res)=>{
-        sequelize.
-        query(`select * from author_list
-        left outer JOIN
-        (select id as recipe_id, title from recipes) r on author_list.recipe_id = r.recipe_id
-        left outer JOIN
-        (select id as author_id, name from authors) a on author_list.author_id=a.author_id
-        `,
-            {type: QueryTypes.SELECT})
-        .then((r) => {
-            let result = []
-            r.forEach(item => {
-                if (!result[item.author_id]){
-                    result[item.author_id]={
-                      author_id: item.author_id,
-                      name: item.name,
-                    }
-                  }
-                  let recipe_tmp = result[item.author_id].recipes?result[item.author_id].recipes:[]
-                  recipe_tmp.push({recipe_id:item.recipe_id, title:item.title})
-                  result[item.author_id].recipes = recipe_tmp
-            })
-            result = result.filter(item => item!==null)
-            res.json(result.sort((a,b)=>{
-                if (a.name>b.name) return 1
-                if (a.name<b.name) return -1
-                return 0
-            }))
-            // res.json(result)
         }).catch((err) => {
             console.error(err)
         });
@@ -281,7 +202,7 @@ function route(app){
         .then(il=>res.json(il))
         .catch(err=>res.json(err))
     })
-    app.post('/author_list', (req,res)=>{
+    app.post('/author_list/save', (req,res)=>{
         Author_List.create({
         recipe_id:req.body.recipe_id,
         author_id:req.body.author_id,
@@ -383,16 +304,13 @@ function route(app){
      * Bloco de atualização de registros
      */
     app.put('/recipe/:id', (req,res)=>{
-        Recipe.update(
-            removeNulls(req.body),  
-            // }
-            // {
-            // title:req.body.title,
-            // yield_amount: req.body.yield_amount,
-            // yield_type_id: req.body.yield_type_id,
-            // instructions: req.body.instructions,
-            // prep_time: req.body.prep_time
-        {
+        Recipe.update({
+            title:req.body.title,
+            yield_amount: req.body.yield_amount,
+            yield_type_id: req.body.yield_type_id,
+            instructions: req.body.instructions,
+            prep_time: req.body.prep_time
+        },{
             where:{
                 id:req.params.id
             }
@@ -404,15 +322,13 @@ function route(app){
     app.put('/ingredient_list/:id', (req, res) => {
         console.log(req.body)
         console.log(req.params)
-        Ingredient_List.update(
-            removeNulls(req.body),
-            // {
-            //     amount: req.body.amount,
-            //     unit_id: req.body.unit_id,
-            //     group_id: req.body.group_id,
-            //     substitute_for: req.body.substitute_for,
-            //     ingredient_id: req.body.ingredient_id
-            // }, 
+        Ingredient_List.update({
+                amount: req.body.amount,
+                unit_id: req.body.unit_id,
+                group_id: req.body.group_id,
+                substitute_for: req.body.substitute_for,
+                ingredient_id: req.body.ingredient_id
+            }, 
             {
                 where: {
                     id: req.params.id
@@ -422,17 +338,6 @@ function route(app){
             .catch(err => res.json(err))
     })
 
-    app.put('/author_list/:id', (req,res)=>{
-        Author_List.update({
-            author_id:req.body.author_id,
-        },{
-            where:{
-                recipe_id:req.params.id
-            }
-        })
-        .then(al=>res.json(al))
-        .catch(err=>res.json(err))
-    })
     app.put('/prep_method_list/:id', (req,res)=>{
         Prep_Method_List.update({
             prep_method_id:req.body.prep_method_id
