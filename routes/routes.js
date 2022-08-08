@@ -75,6 +75,15 @@ function route(app){
         })
         .then(recipes => res.json(recipes));
     });
+
+    app.get(`/recipes/random/:limit`, (req,res)=>{
+        Recipe.findAll({
+            order:sequelize.random(),
+            limit:req.params.limit
+        })
+        .then(recipes=>res.json(recipes))
+    })
+    
     app.get('/authors', function(req,res){
         Author.findAll({
         order:[[Sequelize.fn('lower', Sequelize.col('name')),'ASC']]})
