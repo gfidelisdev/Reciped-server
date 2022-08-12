@@ -35,6 +35,7 @@ const Category_List = require("../reciped-db/category_list");
  const Unit = require("../reciped-db/unit");
  const Unit_List = require("../reciped-db/unit_list");
  const Yield_Type = require('../reciped-db/yield_type');
+const  RecipeController = require('../controllers/RecipeController');
 
 function route(app){
     app.get('/teste',(req,res)=>{return res.send('teste')});
@@ -260,6 +261,18 @@ function route(app){
         });
     })
 
+    app.get(`/recipe/:id`, async (req, res)=>{
+        console.log("🚀 ~ file: routes.js ~ line 267 ~ app.get ~ req.params.id", req.params.id)
+        try {
+            console.log("🚀 ~ file: routes.js ~ line 268 ~ app.get ~ RecipeController", RecipeController)
+            return res.json(await RecipeController.get(req.params.id))
+        }
+        catch (error){
+            console.log("🚀 ~ file: routes.js ~ line 271 ~ app.get ~ error", error)
+            res.status(500)
+            return res.json(error)
+        }
+    })
     /**
      * Fim do bloco de pesquisa de registros relacionados
      */
