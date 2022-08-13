@@ -273,6 +273,7 @@ function route(app){
             return res.json(error)
         }
     })
+
     /**
      * Fim do bloco de pesquisa de registros relacionados
      */
@@ -494,7 +495,7 @@ function route(app){
             .catch(err=>res.json(err))
     })
 
-    app.delete('ingredient_list/:id',(req,res)=>{
+    app.delete('/ingredient_list/:id',(req,res)=>{
         Ingredient_List.destroy({
             where:{
                 id:req.params.id
@@ -506,6 +507,23 @@ function route(app){
     /**
      * Fim do bloco de exclusão de registros
      */
+
+
+
+    /**
+     * Bloco de testes
+     */
+
+    app.get('/super',(req,res)=>{
+        return res.json(RecipeController.superGet(10))
+    })
+    /**
+     * Fim do bloco de testes
+     */
 }
+
+
+
+
 
 module.exports = route
