@@ -6,6 +6,8 @@ const Ingredient_List = require('../reciped-db/ingredient_list')
 const db = require('./../db')
 const Recipe = require('./../reciped-db/recipe')
 const IngredientListController = require('./IngredientListController')
+const CategoryListController = require('./CategoryListController')
+
 const RecipeController = {
     async get(id){
         let recipe = await db
@@ -25,44 +27,10 @@ const RecipeController = {
     async superGet(id){
         let recipe = await Recipe.findByPk(id)
         recipe = recipe.dataValues
-
-        // let ingredients_list = await Ingredient_List.findAll({
-        //     where: {
-        //         recipe_id: id
-        //     }
-        // })
-        // ingredients_list = ingredients_list.dataValues
-        // ingredients_list = await ingredients_list.map(async ingredient_list=>{
-        //     let ingredient = await Ingredient.findByPk(ingredient_list.ingredient_id)
-        //     return {...ingredient_list, ...ingredient}
-        // })
-
         let ingredients_list = await IngredientListController.getByParams({recipe_id:id})
-        // ingredients_list = await Promise.all(ingredients_list.map(async (ingredient_list)=>{
-        //     let ingredient = await Ingredient.findByPk(
-        //         ingredient_list.ingredient_id,
-        //          {attributes:{
-        //             exclude: ['id']
-        //          }
-        //         })
-        //     ingredient = ingredient.dataValues
-        //     return {...ingredient_list, ...ingredient}
-        // }))
-        console.log("🚀 ~ file: RecipeController.js ~ line 30 ~ superGet ~ ingredients_list", await ingredients_list)
-        let category_list = await Category_List.findOne({
-            where: {
-                recipe_id:id
-            }
-        })
-        category_list = category_list.dataValues
-        let category = await Category.findByPk(category_list.category_id)
-        category = category.dataValues
-        console.log("🚀 ~ file: RecipeController.js ~ line 57 ~ superGet ~ category", category)
-        
-        console.log("🚀 ~ file: RecipeController.js ~ line 54 ~ superGet ~ category_list", category_list)
-        recipe.category = category
+        let categories_list = await CategoryListController.getByParams({recipe_id:id})
+        recipe.categories_list = categories_list
         recipe.ingredients_list = ingredients_list
-        console.log("🚀 ~ file: RecipeController.js ~ line 63 ~ superGet ~ recipe", recipe)
         return recipe
     }
 }

@@ -9,7 +9,6 @@ const IngredientListController = {
         ingredients_list = ingredients_list.map(ingredient_list => ingredient_list.dataValues)
         ingredients_list = await Promise.all(ingredients_list.map(async (ingredient_list)=>{
             let ingredient = await IngredientController.getByPk(ingredient_list.ingredient_id)
-            console.log("🚀 ~ file: IngredientListController.js ~ line 12 ~ ingredients_list=awaitPromise.all ~ ingredient", ingredient)
             ingredient_list.ingredient = ingredient
             return ingredient_list
         }))
