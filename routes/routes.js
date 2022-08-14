@@ -514,8 +514,8 @@ function route(app){
      * Bloco de testes
      */
 
-    app.get('/super',(req,res)=>{
-        RecipeController.superGet(10).then(data=>{
+    app.get('/super/:id',(req,res)=>{
+        RecipeController.superGet(req.params.id).then(data=>{
             return res.json(data)
         })
     })
