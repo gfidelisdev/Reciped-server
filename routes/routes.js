@@ -515,7 +515,9 @@ function route(app){
      */
 
     app.get('/super',(req,res)=>{
-        return res.json(RecipeController.superGet(10))
+        RecipeController.superGet(10).then(data=>{
+            return res.json(data)
+        })
     })
     /**
      * Fim do bloco de testes
