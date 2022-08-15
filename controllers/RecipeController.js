@@ -7,6 +7,8 @@ const db = require('./../db')
 const Recipe = require('./../reciped-db/recipe')
 const IngredientListController = require('./IngredientListController')
 const CategoryListController = require('./CategoryListController')
+const sequelize = require('sequelize')
+const AuthorListController = require('./AuthorListController')
 
 const RecipeController = {
     async get(id){
@@ -21,17 +23,37 @@ const RecipeController = {
             ON al.recipe_id=r.id AND al.author_id=a.id
             INNER JOIN authors a
             where r.id=${id}`)
-        return recipe
+        return await this.superGet(id)
     },
 
+    async featured(limit){
+        let recipes = await Recipe.findAll({
+            order: sequelize.random(),
+            limit
+        })
+        recipes = recipes.map(recipe=>recipe.dataValues)
+    },
+
+    async getRelations(recipe){
+        let ingredients_list = await IngredientListController.getByParams({recipe_id:recipe.id})
+        let categories_list = await CategoryListController.getByParams({recipe_id:recipe.id})
+        let authors_list = await AuthorListController.getByParams({recipe_id:recipe.id})
+        recipe.categories_list = categories_list
+        recipe.ingredients_list = ingredients_list
+        recipe.authors_list = authors_list
+        return recipe
+    },
     async superGet(id){
         let recipe = await Recipe.findByPk(id)
         recipe = recipe.dataValues
-        let ingredients_list = await IngredientListController.getByParams({recipe_id:id})
-        let categories_list = await CategoryListController.getByParams({recipe_id:id})
-        recipe.categories_list = categories_list
-        recipe.ingredients_list = ingredients_list
+        // let ingredients_list = await IngredientListController.getByParams({recipe_id:id})
+        // let categories_list = await CategoryListController.getByParams({recipe_id:id})
+        // recipe.categories_list = categories_list
+        // recipe.ingredients_list = ingredients_list
+        // return recipe
+        recipe = await this.getRelations(recipe)
         return recipe
+        
     }
 }
 
