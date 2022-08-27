@@ -18,7 +18,7 @@ const app = express();
 const port = 53001;
 app.use(cors());
 app.use(express.json());
-app.listen(port, () => console.log(`notes-app listening on port ${port}!`));
+app.listen(port, () => console.log(`Reciped server listening on port ${port}!`));
 
 
 route(app)
