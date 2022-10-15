@@ -108,6 +108,9 @@ function route(app){
     /**
      * Bloco de pesquisas de tabelas por id
      */
+    app.get('/author/:id', function(req,res){
+        Author.findByPk(req.params.id).then(author=>res.json(author))
+    })
     app.get('/category/:id', function(req,res){
         Category.findByPk(req.params.id).then(category=>res.json(category))
     })
